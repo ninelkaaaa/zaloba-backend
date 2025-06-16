@@ -7,9 +7,9 @@ const app = express();
 const routes = require('./routes');
 
 app.use(cors({
-    origin: 'https://zaloba.vercel.app',
-    credentials: true
+    origin: ['https://zaloba.vercel.app', 'https://zaloba-admin.vercel.app']
   }));
+  
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(routes);
