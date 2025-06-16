@@ -1,12 +1,14 @@
 const { Pool } = require('pg');
-require('dotenv').config();
 
 const pool = new Pool({
-  user: process.env.DB_USER,
-  host: process.env.DB_HOST,
-  database: process.env.DB_NAME,
-  password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT,
+  user: 'zaloba_db_user',         // смотри в Render → DATABASE → Internal Database URL
+  host: 'dpg-d1818i8gjchc73f92gkg-a',
+  database: 'zaloba-db',    // название твоей базы
+  password: 'KLdBeUAj1ruuOX0rRdd3nSOmPMYkC9q3',
+  port: 5432,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 module.exports = pool;
