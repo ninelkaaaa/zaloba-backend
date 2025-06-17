@@ -1,12 +1,13 @@
 const pool = require('../db');
 
 const createComplaint = async (req, res) => {
-  const { category, message, user_token } = req.body;
-  const photo = req.file ? 'uploads/${req.file.filename}' : null;
+  const { category, message } = req.body;
+  const photo = req.file ? uploads/${req.file.filename} : null;
+
   try {
     const result = await pool.query(
-      'INSERT INTO complaints (category, message, photo_url, user_token) VALUES ($1, $2, $3, $4) RETURNING *',
-      [category, message, photo, user_token]
+      'INSERT INTO complaints (category, message, photo_url) VALUES ($1, $2, $3) RETURNING *',
+      [category, message, photo]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -40,4 +41,8 @@ const updateComplaintStatus = async (req, res) => {
   }
 };
 
-module.exports = { createComplaint, getComplaints, updateComplaintStatus };
+module.exports = {
+  createComplaint,
+  getComplaints,
+  updateComplaintStatus,
+};
