@@ -8,12 +8,11 @@ const {
   updateComplaintStatus,
 } = require('../controllers/complaintController');
 
-const router = express.Router(); // ✅ нужно было сначала объявить router
+const router = express.Router(); 
 
-// === Настройка хранения файлов ===
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, '..', 'uploads')); // безопасный путь
+    cb(null, path.join(__dirname, '..', 'uploads')); 
   },
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + '-' + Buffer.from(file.originalname, 'latin1').toString('utf8');
@@ -23,7 +22,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// === Роуты ===
 router.post('/complaints', upload.single('photo'), createComplaint);
 router.get('/complaints', getComplaints);
 router.put('/complaints/:id/status', updateComplaintStatus);
