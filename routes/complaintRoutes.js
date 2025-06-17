@@ -1,7 +1,6 @@
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
+const path = require('path');
 const pool = require('../db');
 const {
   createComplaint,
@@ -9,55 +8,48 @@ const {
   updateComplaintStatus,
 } = require('../controllers/complaintController');
 
-// Жалобы
+const storage = multer.diskStorage({
+  destination: 'uploads/',
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
+  },
+});
+const upload = multer({ storage });
+
+router = express.Router();
+
 router.post('/complaints', upload.single('photo'), createComplaint);
 router.get('/complaints', getComplaints);
 router.put('/complaints/:id/status', updateComplaintStatus);
 
-// Статусы
 router.get('/statuses', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM statuses');
-    res.status(200).json(result.rows);
+    res.json(result.rows);
   } catch (error) {
     console.error('Ошибка при получении статусов', error);
     res.status(500).json({ error: 'Ошибка при получении статусов' });
   }
 });
 
-// 🔥 КАТЕГОРИИ
-
-// Получение всех категорий
 router.get('/categories', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM categories ORDER BY id ASC');
-    res.status(200).json(result.rows);
+    res.json(result.rows);
   } catch (error) {
     console.error('Ошибка при получении категорий:', error);
     res.status(500).json({ error: 'Ошибка сервера при получении категорий' });
   }
 });
 
-// Добавление новой категории
 router.post('/categories', async (req, res) => {
   const { name } = req.body;
-
-  if (!name || name.trim() === '') {
-    return res.status(400).json({ error: 'Название категории обязательно' });
-  }
-
+  if (!name.trim()) return res.status(400).json({ error: 'Название категории обязательно' });
   try {
-    // Проверка, существует ли уже такая категория
     const existing = await pool.query('SELECT * FROM categories WHERE name = $1', [name]);
-    if (existing.rows.length > 0) {
-      return res.status(400).json({ error: 'Такая категория уже существует' });
-    }
-
-    const result = await pool.query(
-      'INSERT INTO categories (name) VALUES ($1) RETURNING *',
-      [name]
-    );
-
+    if (existing.rows.length) return res.status(400).json({ error: 'Категория уже есть' });
+    const result = await pool.query('INSERT INTO categories (name) VALUES ($1) RETURNING *', [name]);
     res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Ошибка при добавлении категории:', error);
