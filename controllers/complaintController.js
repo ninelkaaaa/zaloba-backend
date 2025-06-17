@@ -2,7 +2,7 @@ const pool = require('../db');
 
 const createComplaint = async (req, res) => {
   const { category, message } = req.body;
-  const photo = req.file ? 'uploads/${req.file.filename}' : null;
+  const photo = req.file ? `uploads/${req.file.filename}` : null;
 
   try {
     const result = await pool.query(
