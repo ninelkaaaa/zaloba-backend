@@ -5,7 +5,7 @@ const createComplaint = async (req, res) => {
   const photo = req.file ? 'uploads/${req.file.filename}' : null;
   try {
     const result = await pool.query(
-      'INSERT INTO complaints (category, message, photo, user_token) VALUES ($1, $2, $3, $4) RETURNING *',
+      'INSERT INTO complaints (category, message, photo_url, user_token) VALUES ($1, $2, $3, $4) RETURNING *',
       [category, message, photo, user_token]
     );
     res.status(201).json(result.rows[0]);
